@@ -1,0 +1,60 @@
+@page
+
+
+@model CartModel
+
+
+<h2>Korpa</h2>
+
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Kolicina</th>
+            <th>Proizvod</th>
+            <th class="text-right">Cena</th>
+            <th class="text-right">Medjuvrednost</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var line in Model?.Cart?.Lines ?? Enumerable.Empty<CartLine>()) 
+        {
+            <tr>
+                <td class="text-center">@line.Quantity</td>
+                <td class="text-left">@line.Product.Name</td>
+                <td class="text-right">@line.Product.Price.ToString("c")</td>
+                <td class="text-right">
+                    @((line.Quantity * line.Product.Price).ToString("c"))
+                </td>
+                <td class="text-center">
+                    <form asp-page-handler="Remove" method="post">
+                        <input type="hidden" name="ProductID"
+                               value="@line.Product.ProductID" />
+                        <input type="hidden" name="returnUrl"
+                               value="@Model?.ReturnUrl" />
+                        <button type="submit" class="btn btn-sm btn-danger">
+                            Obrisi
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="3" class="text-right">Ukupno:</td>
+            <td class="text-right">
+                @Model?.Cart?.ComputeTotalValue().ToString("c")
+            </td>
+        </tr>
+    </tfoot>
+</table>
+
+
+<div class="text-center">
+    <a class="btn btn-danger" href="@Model?.ReturnUrl">Nastavi sa kupovinom</a>
+    <a class="btn btn-danger" asp-action="Checkout" asp-controller="Order">
+        Poruci
+    </a>
+</div>
